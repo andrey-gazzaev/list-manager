@@ -30,11 +30,10 @@ const DEFAULT_FILTER: filter = {
 };
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [AsyncPipe, JsonPipe],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+    selector: 'app-root',
+    imports: [AsyncPipe, JsonPipe],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'list-manager';
