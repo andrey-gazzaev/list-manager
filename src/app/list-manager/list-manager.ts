@@ -1,15 +1,11 @@
 import {
   ResourceRef,
-  Signal,
   WritableSignal,
-  computed,
-  effect,
-  resource,
+  linkedSignal,
   signal,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, switchMap } from 'rxjs';
-import { rxResource, toObservable } from '@angular/core/rxjs-interop';
+import { Observable } from 'rxjs';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 type FetchFn<TList, TSort = void, TFilter = void> = (
   queryParams: QueryParams<TSort, TFilter>
@@ -31,8 +27,6 @@ type ListManagerInit<TList, TSort = void, TFilter = void> = {
   readonly initSort?: TSort;
   readonly initPagination?: Pagination;
   readonly fetch: FetchFn<TList, TSort, TFilter>;
-  readonly activatedRoute: ActivatedRoute;
-  readonly router: Router;
 };
 
 const DEFAULT_PAGINATION: Pagination = {
@@ -47,9 +41,9 @@ export class ListManager<TList, TSort = void, TFilter = void> {
 
   private readonly pagination: WritableSignal<Pagination>;
 
-  public readonly queryParams: Signal<QueryParams<TSort, TFilter>>;
-
   private readonly fetch: FetchFn<TList, TSort, TFilter>;
+
+  public readonly queryParams: WritableSignal<QueryParams<TSort, TFilter>>;
 
   public readonly list: ResourceRef<TList | null>;
 
@@ -64,7 +58,7 @@ export class ListManager<TList, TSort = void, TFilter = void> {
 
     this.fetch = data.fetch;
 
-    this.queryParams = computed(() => ({
+    this.queryParams = linkedSignal(() => ({
       filter: this.filter(),
       sort: this.sort(),
       pagination: this.pagination(),
@@ -86,5 +80,9 @@ export class ListManager<TList, TSort = void, TFilter = void> {
 
   public setPagination(pagination: Pagination): void {
     this.pagination.set(pagination);
+  }
+
+  public setQueryParams(queryParams: QueryParams<TSort, TFilter>): void {
+    this.queryParams.set(queryParams);
   }
 }

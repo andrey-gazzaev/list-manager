@@ -1,7 +1,7 @@
-import { AsyncPipe, JsonPipe } from '@angular/common';
+import { JsonPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ListManager } from './list-manager/list-manager';
 
 type User = {
@@ -36,10 +36,6 @@ const DEFAULT_FILTER: filter = {
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  private readonly router = inject(Router);
-
-  private readonly activatedRoute = inject(ActivatedRoute);
-
   private readonly httpClient = inject(HttpClient);
 
   protected readonly listManager = new ListManager<User[], Sort, filter>({
@@ -51,8 +47,6 @@ export class AppComponent {
         'https://6641a41b3d66a67b3434756c.mockapi.io/api/v1/users'
       );
     },
-    activatedRoute: this.activatedRoute,
-    router: this.router,
   });
 
   protected onSearchChange(event: Event): void {
