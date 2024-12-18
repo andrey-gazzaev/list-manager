@@ -21,7 +21,9 @@
     "module": "ES2022",
     "lib": [
       "ES2022",
-      "dom"
+      "dom",
+      "dom.iterable",
+      "es2019"
     ]
   },
   "angularCompilerOptions": {

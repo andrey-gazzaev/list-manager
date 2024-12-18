@@ -30,14 +30,12 @@ const DEFAULT_FILTER: filter = {
 };
 
 @Component({
-    selector: 'app-root',
-    imports: [AsyncPipe, JsonPipe],
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.css'
+  selector: 'app-root',
+  imports: [JsonPipe],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'list-manager';
-
   private readonly router = inject(Router);
 
   private readonly activatedRoute = inject(ActivatedRoute);

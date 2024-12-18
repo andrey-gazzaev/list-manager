@@ -1,13 +1,15 @@
 import {
+  ResourceRef,
   Signal,
   WritableSignal,
   computed,
   effect,
+  resource,
   signal,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, switchMap } from 'rxjs';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { rxResource, toObservable } from '@angular/core/rxjs-interop';
 
 type FetchFn<TList, TSort = void, TFilter = void> = (
   queryParams: QueryParams<TSort, TFilter>
@@ -49,50 +51,29 @@ export class ListManager<TList, TSort = void, TFilter = void> {
 
   private readonly fetch: FetchFn<TList, TSort, TFilter>;
 
-  public readonly list$: Observable<TList | null>;
+  public readonly list: ResourceRef<TList | null>;
 
   public constructor(data: ListManagerInit<TList, TSort, TFilter>) {
     this.filter = signal<TFilter | null>(data.initFilter ?? null);
+
     this.sort = signal<TSort | null>(data.initSort ?? null);
+
     this.pagination = signal<Pagination>(
       data.initPagination ?? DEFAULT_PAGINATION
     );
+
     this.fetch = data.fetch;
+
     this.queryParams = computed(() => ({
       filter: this.filter(),
       sort: this.sort(),
       pagination: this.pagination(),
     }));
 
-    effect(() => {
-      const params = new URLSearchParams(document.location.href);
-      const queryParams = this.queryParams();
-      for (const item in queryParams) {
-        const value = queryParams[item as keyof typeof queryParams];
-        if (value != null) {
-          this.appendParamsToUrlSearchParams(params, value);
-        }
-      }
-
-      data.router.navigate([], {
-        relativeTo: data.activatedRoute,
-        queryParams: params,
-        queryParamsHandling: 'merge',
-      });
+    this.list = rxResource({
+      request: () => this.queryParams(),
+      loader: (params) => this.fetch(params.request),
     });
-
-    this.list$ = toObservable(this.queryParams).pipe(
-      switchMap((queryParams) => this.fetch(queryParams))
-    );
-  }
-
-  private appendParamsToUrlSearchParams(
-    params: URLSearchParams,
-    value: { [key: string]: any }
-  ) {
-    for (const item in value) {
-      params.append(String(item), String(value[item]));
-    }
   }
 
   public setFilter(filter: TFilter): void {

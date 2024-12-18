@@ -1,4 +1,9 @@
 <main>
-  <input type="text" (change)="onSearchChange($event)" />
-  {{ listManager.list$ | async | json }}
+  <input type="text" (keydown)="onSearchChange($event)" /> <
+
+  <pre>
+    <code>
+      {{ listManager.list.value() | json }}
+    </code>
+  </pre>
 </main>
